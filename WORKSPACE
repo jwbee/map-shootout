@@ -56,10 +56,9 @@ http_archive(
 )
 
 http_archive(
-        name = "martinus_robin_hood_hashing",
-        build_file = "@//:BUILD.robinhood",
-        strip_prefix = "robin-hood-hashing-3.11.3/src/include",
-        urls = ["https://github.com/martinus/robin-hood-hashing/archive/refs/tags/3.11.3.zip"],
-        sha256 = "68a40a5fb6a582a0900318068b1c9bb82eb11bbd2cd04ba8a9e7b56c24d146eb",
-        )
-
+    name = "martinus_robin_hood_hashing",
+    build_file = "@//:BUILD.robinhood",
+    sha256 = "68a40a5fb6a582a0900318068b1c9bb82eb11bbd2cd04ba8a9e7b56c24d146eb",
+    strip_prefix = "robin-hood-hashing-3.11.3/src/include",
+    urls = ["https://github.com/martinus/robin-hood-hashing/archive/refs/tags/3.11.3.zip"],
+)
