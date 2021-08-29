@@ -1,0 +1,17 @@
+*~
+.*.swp
+/.classpath
+/.factorypath
+/.idea/
+/.ijwb/
+/.project
+/.settings
+/.vscode/
+/bazel.iml
+/bazel-*
+/output/
+/production
+/.sass-cache
+.bazelversion
+user.bazelrc
+

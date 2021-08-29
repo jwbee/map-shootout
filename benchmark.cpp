@@ -1,4 +1,6 @@
 #include <iostream>
+#include <algorithm>
+#include <random>
 #include <string>
 #include <vector>
 #include <unordered_set>
@@ -6,10 +8,10 @@
 #define XXH_INLINE_ALL
 #include "xxhash.h"
 
-#include "robin_hood.h"
 #include "absl/container/flat_hash_set.h"
 #include "absl/hash/hash.h"
 #include "benchmark/benchmark.h"
+#include "robin_hood.h"
 
 namespace {
   std::vector<std::string> words{};
@@ -18,6 +20,8 @@ namespace {
 		return XXH3_64bits(s.data(), s.size());
 	}
   };
+  std::random_device r{};
+  std::default_random_engine rng{r()};
 }
 
 template <typename SetType> void BM_SetCreate(benchmark::State& state) {
@@ -45,6 +49,7 @@ template <typename SetType> void BM_SetFind(benchmark::State& state) {
 	for (const auto& w : words) {
 		m.emplace(w);
 	}
+	std::shuffle(std::begin(words), std::end(words), rng);
 	typename SetType::size_type sz{0};
 	typename std::vector<std::string>::size_type w{0};
 	for (auto _ : state) {
@@ -75,6 +80,8 @@ int main(int argc, char** argv) {
         std::cerr << "error reading stdin\n";
         return 1;
     }
+
+    std::shuffle(std::begin(words), std::end(words), rng);
 
     benchmark::RunSpecifiedBenchmarks();
     benchmark::Shutdown();

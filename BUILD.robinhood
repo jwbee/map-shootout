@@ -1,0 +1,5 @@
+cc_library(
+    name = "robin_hood_hashing",
+    hdrs = ["robin_hood.h"],
+    visibility = ["//visibility:public"],
+)
