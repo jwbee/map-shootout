@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cstdlib>
 #include <iostream>
 #include <random>
 #include <string>
@@ -24,6 +25,7 @@ std::random_device r{};
 std::default_random_engine rng{r()};
 } // namespace
 
+// Fill an instance of SetType with the contents of words.
 template <typename SetType> void BM_SetCreate(benchmark::State &state) {
   SetType m{};
   m.reserve(16'000'000);
@@ -34,6 +36,24 @@ template <typename SetType> void BM_SetCreate(benchmark::State &state) {
     }
   }
 }
+
+// Fill instance of SetType (not part of the timing), then access it randomly.
+template <typename SetType> void BM_SetFind(benchmark::State &state) {
+  SetType m{};
+  m.reserve(16'000'000);
+  for (const auto &w : words) {
+    m.emplace(w);
+  }
+  std::shuffle(std::begin(words), std::end(words), rng);
+  typename SetType::size_type sz{0};
+  typename std::vector<std::string>::size_type w{0};
+  for (auto _ : state) {
+    sz += m.count(words[w]);
+    ++w;
+  }
+  state.SetItemsProcessed(sz);
+}
+
 BENCHMARK_TEMPLATE(BM_SetCreate,
                    robin_hood::unordered_flat_set<std::string_view>);
 BENCHMARK_TEMPLATE(
@@ -51,21 +71,7 @@ BENCHMARK_TEMPLATE(
 BENCHMARK_TEMPLATE(BM_SetCreate,
                    std::unordered_set<std::string_view, xxhasher>);
 
-template <typename SetType> void BM_SetFind(benchmark::State &state) {
-  SetType m{};
-  m.reserve(16'000'000);
-  for (const auto &w : words) {
-    m.emplace(w);
-  }
-  std::shuffle(std::begin(words), std::end(words), rng);
-  typename SetType::size_type sz{0};
-  typename std::vector<std::string>::size_type w{0};
-  for (auto _ : state) {
-    sz += m.count(words[w]);
-    ++w;
-  }
-  state.SetItemsProcessed(sz);
-}
+// Iteration counts are hard-wired to the same size as the words vector.
 BENCHMARK_TEMPLATE(BM_SetFind, absl::flat_hash_set<std::string_view>)
     ->Iterations(10'000'000);
 BENCHMARK_TEMPLATE(BM_SetFind, absl::flat_hash_set<std::string_view, xxhasher>)
@@ -100,6 +106,11 @@ int main(int argc, char **argv) {
     std::cerr << "error reading stdin\n";
     return 1;
   }
+
+  if (words.size() != words.capacity()) {
+      std::cerr << "Expected exactly ten million lines on stdin" << std::endl;
+      std::abort();
+   }
 
   std::shuffle(std::begin(words), std::end(words), rng);
 
