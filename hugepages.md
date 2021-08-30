@@ -75,7 +75,7 @@ TCMalloc|enabled|98.6B|27.1K|85ns
 
 The gap widens with a larger working set, to 32% CPU time and 33% latency
 
-### 60 million key
+### 60 million keys
 Allocator|THP|Cycles|STLB misses|Latency
 -|-|-|-|-
 GNU|disabled|304B|849M|139ns
